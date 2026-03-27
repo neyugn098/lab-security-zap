@@ -14,7 +14,7 @@ env:
       users:
         - name: dvwa-user
           credentials:
-            username: dvwa
+            username: admin
             password: password
 
 jobs:
