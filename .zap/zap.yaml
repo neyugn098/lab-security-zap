@@ -2,20 +2,20 @@ env:
   contexts:
     - name: dvwa
       urls:
-        - ${ZAP_TARGET}/DVWA/
+        - __TARGET_URL__/DVWA/
       includePaths:
-        - ${ZAP_TARGET}/DVWA/.*
+        - __TARGET_URL__/DVWA/.*
       authentication:
         method: form
         parameters:
-          loginPageUrl: ${ZAP_TARGET}/DVWA/login.php
-          loginRequestUrl: ${ZAP_TARGET}/DVWA/login.php
+          loginPageUrl: __TARGET_URL__/DVWA/login.php
+          loginRequestUrl: __TARGET_URL__/DVWA/login.php
           loginRequestBody: "username={%username%}&password={%password%}&Login=Login"
       users:
         - name: dvwa-user
           credentials:
-            username: dvwa
-            password: dvwa
+            username: admin
+            password: password
 
 jobs:
   - type: spider
@@ -29,3 +29,18 @@ jobs:
     parameters:
       context: dvwa
       user: dvwa-user
+
+  - type: report
+    parameters:
+      template: traditional-html
+      reportFile: report_html.html
+
+  - type: report
+    parameters:
+      template: markdown
+      reportFile: report_md.md
+
+  - type: report
+    parameters:
+      template: traditional-json
+      reportFile: report_json.json
