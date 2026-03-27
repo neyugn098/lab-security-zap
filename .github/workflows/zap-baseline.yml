@@ -26,8 +26,8 @@ jobs:
           sed "s|__TARGET_URL__|${TARGET_URL}|g" .zap/zap.yaml > .zap/zap-final.yaml
           echo "Using target: ${TARGET_URL}"
 
-      - name: Run OWASP ZAP Automation Scan
-        uses: zaproxy/action-automation@v1
+      - name: Run OWASP ZAP Automation Framework
+        uses: zaproxy/action-af@v0.2.0
         with:
           plan: '.zap/zap-final.yaml'
 
