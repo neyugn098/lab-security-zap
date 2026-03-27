@@ -1,7 +1,12 @@
-name: ZAP Baseline Scan
+name: ZAP DVWA Auth Scan
 
 on:
   workflow_dispatch:
+    inputs:
+      target_url:
+        description: 'Cloudflare Quick Tunnel URL (without /DVWA)'
+        required: true
+        default: 'https://your-tunnel.trycloudflare.com'
   push:
     branches:
       - main
@@ -9,22 +14,30 @@ on:
 jobs:
   zap_scan:
     runs-on: ubuntu-latest
+    env:
+      TARGET_URL: ${{ github.event.inputs.target_url || 'https://your-tunnel.trycloudflare.com' }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run OWASP ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.12.0
+      - name: Replace TARGET_URL in ZAP plan
+        run: |
+          sed "s|__TARGET_URL__|${TARGET_URL}|g" .zap/zap.yaml > .zap/zap-final.yaml
+          echo "Using target: ${TARGET_URL}"
+
+      - name: Run OWASP ZAP Automation Scan
+        uses: zaproxy/action-automation@v1
         with:
-          target: 'https://rooms-depot-notes-presentation.trycloudflare.com/DVWA'
-          cmd_options: '-a'
+          plan: '.zap/zap-final.yaml'
 
       - name: Upload ZAP Reports
         uses: actions/upload-artifact@v4
         with:
-          name: zap-baseline-report
+          name: zap-auth-report
           path: |
             report_html.html
             report_md.md
             report_json.json
+            zap.log
+          if-no-files-found: warn
