@@ -14,8 +14,8 @@ env:
       users:
         - name: dvwa-user
           credentials:
-            username: admin
-            password: password
+            username: dvwa
+            password: dvwa
 
 jobs:
   - type: spider
