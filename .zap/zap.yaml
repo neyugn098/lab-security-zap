@@ -1,0 +1,31 @@
+env:
+  contexts:
+    - name: dvwa
+      urls:
+        - ${ZAP_TARGET}/DVWA/
+      includePaths:
+        - ${ZAP_TARGET}/DVWA/.*
+      authentication:
+        method: form
+        parameters:
+          loginPageUrl: ${ZAP_TARGET}/DVWA/login.php
+          loginRequestUrl: ${ZAP_TARGET}/DVWA/login.php
+          loginRequestBody: "username={%username%}&password={%password%}&Login=Login"
+      users:
+        - name: dvwa-user
+          credentials:
+            username: dvwa
+            password: dvwa
+
+jobs:
+  - type: spider
+    parameters:
+      context: dvwa
+      user: dvwa-user
+
+  - type: passiveScan-wait
+
+  - type: activeScan
+    parameters:
+      context: dvwa
+      user: dvwa-user
