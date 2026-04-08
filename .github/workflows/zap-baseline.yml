@@ -1,0 +1,38 @@
+name: ZAP Baseline Scan
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  zap_scan:
+    runs-on: ubuntu-latest
+
+    env:
+      TARGET_URL: ${{ secrets.ZAP_TARGET_URL }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Show target being scanned
+        run: echo "Scanning $TARGET_URL"
+
+      - name: Run OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.15.0
+        with:
+          target: ${{ env.TARGET_URL }}
+          cmd_options: "-a"
+          allow_issue_writing: false
+          artifact_name: zap-report
+
+      - name: Upload report artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-report-files
+          path: |
+            report_html.html
+            report_md.md
+            report_json.json
+          if-no-files-found: warn
